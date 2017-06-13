@@ -387,7 +387,7 @@ def pip2tgz(argv=sys.argv, option=None):
         description=dedent("""
             Where PACKAGES are any names accepted by pip (ex, `foo`,
             `foo==1.2`, `-r requirements.txt`), and [PIP_OPTIONS] can be any
-            options accepted by `pip install -d`.
+            options accepted by `pip download -d`.
 
             pip2tgz will download all packages required to install PACKAGES and
             save them to sanely-named tarballs or wheel files in OUTPUT_DIRECTORY.
@@ -396,7 +396,6 @@ def pip2tgz(argv=sys.argv, option=None):
 
                 $ pip2tgz /var/www/packages/ -r requirements.txt foo==1.2 baz/
                 $ pip2tgz /var/www/packages/ \\
-                    --no-use-wheel \\
                     --index-url https://example.com/simple \\
                     bar==3.1
         """))
@@ -421,13 +420,13 @@ def pip2tgz(argv=sys.argv, option=None):
 
     # let index decide what to download unless forcing wheels and tarballs
     if not (option.build_wheels and option.get_source):
-        pip_run_command(['install', '-d', outdir] + argv[2:])
+        pip_run_command(['download', '-d', outdir] + argv[2:])
     # download/compile wheels only
     if option.build_wheels:
         pip_run_command(['wheel', '--wheel-dir', outdir] + argv[2:])
     # download source tarballs only
     if option.get_source:
-        pip_run_command(['install', '-d', outdir, '--no-use-wheel'] + argv[2:])
+        pip_run_command(['download', '-d', outdir, '--no-binary', ':all:'] + argv[2:])
 
     os.chdir(outdir)
     new_pkgs = pkg_file_set() - old_pkgs
@@ -502,8 +501,8 @@ def pip2pi(argv=sys.argv):
             package index will be built locally and rsync will be used to copy
             it to the remote host.
 
-            PIP_OPTIONS can be any options accepted by `pip install -d`, like
-            `--index-url` or `--no-use-wheel`.
+            PIP_OPTIONS can be any options accepted by `pip download -d`, like
+            `--index-url`.
 
             For example, to create a remote index:
 
@@ -516,7 +515,6 @@ def pip2pi(argv=sys.argv):
             To pass arguments to pip:
 
                 $ pip2pi ~/Sites/packages/ \\
-                    --no-use-wheel \\
                     --index-url https://example.com/simple \\
                     -r requirements-base.txt \\
                     -r requirements-dev.txt \\

@@ -20,8 +20,8 @@ your software depends on.
     package index will be built locally and rsync will be used to copy
     it to the remote host.
 
-    PIP_OPTIONS can be any options accepted by `pip install -d`, like
-    `--index-url` or `--no-use-wheel`.
+    PIP_OPTIONS can be any options accepted by `pip download -d`, like
+    `--index-url`.
 
     For example, to create a remote index:
 
@@ -35,7 +35,6 @@ your software depends on.
 
         $ pip2pi ~/Sites/packages/ \
             --index-url https://example.com/simple \
-            --no-use-wheel \
             -r requirements-base.txt \
             -r requirements-dev.txt \
             bar==3.1
